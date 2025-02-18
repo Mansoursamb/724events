@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import { useEffect, useState } from "react";
 import { useData } from "../../contexts/DataContext";
 import { getMonth } from "../../helpers/Date";
@@ -7,13 +8,6 @@ import "./style.scss";
 const Slider = () => {
   const { data } = useData();
   const [index, setIndex] = useState(0);
-  const [isLoaded, setIsLoaded] = useState(false); // Indicateur de chargement
-
-  useEffect(() => {
-    if (data && data.focus && data.focus.length > 0) {
-      setIsLoaded(true);
-    }
-  }, [data]);
 
   if (!data || !data.focus || data.focus.length === 0) {
     return <p>Chargement...</p>;
@@ -29,26 +23,26 @@ const Slider = () => {
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, [byDateDesc.length]);
+  }, [index, byDateDesc.length]);
 
-  if (!isLoaded) {
-    return <p>Chargement...</p>;
-  }
+  const handlePaginationClick = (idx) => {
+    setIndex(idx);
+  };
 
   return (
     <div className="SlideCardList">
-      {byDateDesc.map((event) => (
+      {byDateDesc.map((event, idx) => (
         <div
-          key={`card-${event.id}`} // Utilise un id unique
+          key={event.id}
           className={`SlideCard SlideCard--${
-            index === byDateDesc.indexOf(event) ? "display" : "hide"
+            index === idx ? "display" : "hide"
           }`}
         >
-          {event.cover && <img src={event.cover} alt="forum" />}
+          <img src={event.cover} alt={event.title} />
           <div className="SlideCard__descriptionContainer">
             <div className="SlideCard__description">
-              {event.title && <h3>{event.title}</h3>}
-              {event.description && <p>{event.description}</p>}
+              <h3>{event.title}</h3>
+              <p>{event.description}</p>
               <div>{getMonth(new Date(event.date))}</div>
             </div>
           </div>
@@ -57,13 +51,13 @@ const Slider = () => {
 
       <div className="SlideCard__paginationContainer">
         <div className="SlideCard__pagination">
-          {byDateDesc.map((event) => (
+          {byDateDesc.map((_, radioIdx) => (
             <input
-              key={`radio-${event.id}`} // Utilisation d'un identifiant unique
+              key={`radio-${radioIdx}`}
               type="radio"
               name="radio-button"
-              checked={index === byDateDesc.indexOf(event)}
-              onChange={() => setIndex(byDateDesc.indexOf(event))}
+              checked={index === radioIdx}
+              onChange={() => handlePaginationClick(radioIdx)}
               readOnly
             />
           ))}
