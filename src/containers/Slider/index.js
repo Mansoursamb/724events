@@ -9,25 +9,33 @@ const Slider = () => {
   const { data } = useData();
   const [index, setIndex] = useState(0);
 
-  if (!data || !data.focus || data.focus.length === 0) {
-    return <p>Chargement...</p>;
-  }
-
-  const byDateDesc = [...data.focus].sort((evtA, evtB) =>
-    new Date(evtA.date) < new Date(evtB.date) ? -1 : 1
-  );
+  // Assurez-vous que les hooks sont appelés de manière inconditionnelle
+  const byDateDesc =
+    data && data.focus
+      ? [...data.focus].sort((evtA, evtB) =>
+          new Date(evtA.date) < new Date(evtB.date) ? -1 : 1
+        )
+      : [];
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIndex((prevIndex) => (prevIndex + 1) % byDateDesc.length);
-    }, 5000);
+    if (byDateDesc.length > 0) {
+      const timer = setTimeout(() => {
+        setIndex((prevIndex) => (prevIndex + 1) % byDateDesc.length);
+      }, 5000);
 
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
+    }
+    // Ajoutez un retour vide pour satisfaire ESLint
+    return undefined;
   }, [index, byDateDesc.length]);
 
   const handlePaginationClick = (idx) => {
     setIndex(idx);
   };
+
+  if (!data || !data.focus || data.focus.length === 0) {
+    return <p>Chargement...</p>;
+  }
 
   return (
     <div className="SlideCardList">
