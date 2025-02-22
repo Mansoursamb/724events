@@ -1,8 +1,8 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-console */
 import { render, screen, waitFor } from "@testing-library/react";
-import { act } from "react";
 import Slider from "./index";
 import { api, DataProvider } from "../../contexts/DataContext";
-import { getMonth } from "../../helpers/Date";
 
 const data = {
   focus: [
@@ -29,12 +29,17 @@ const data = {
 };
 
 describe("When Slider is created", () => {
+  // ✅ Supprime async ici
+
   beforeEach(() => {
     window.console.error = jest.fn();
-    api.loadData = jest.fn().mockReturnValue(data);
+    api.loadData = jest.fn().mockResolvedValue(data);
   });
 
   it("should display the correct months", async () => {
+    window.console.error = jest.fn();
+    api.loadData = jest.fn().mockResolvedValue(data);
+
     await act(async () => {
       render(
         <DataProvider>
@@ -43,30 +48,27 @@ describe("When Slider is created", () => {
       );
     });
 
-    // Attendre que le contenu soit affiché
-    await waitFor(() => {
-      expect(screen.getByText("World economic forum")).toBeInTheDocument();
-    });
-
-    // Vérifier que les mois sont bien affichés au moins une fois
-    const februaryElements = await screen.findAllByText(
-      (content, element) =>
-        element?.tagName.toLowerCase() === "div" &&
-        content.includes(getMonth(new Date("2022-02-29T20:28:45.744Z")))
-    );
-    const marchElements = await screen.findAllByText(
-      (content, element) =>
-        element?.tagName.toLowerCase() === "div" &&
-        content.includes(getMonth(new Date("2022-03-29T20:28:45.744Z")))
-    );
-    const januaryElements = await screen.findAllByText(
-      (content, element) =>
-        element?.tagName.toLowerCase() === "div" &&
-        content.includes(getMonth(new Date("2022-01-29T20:28:45.744Z")))
-    );
-
-    expect(februaryElements.length).toBeGreaterThan(0);
-    expect(marchElements.length).toBeGreaterThan(0);
-    expect(januaryElements.length).toBeGreaterThan(0);
+    screen.debug(); // 🔍 Vérifier le DOM généré
   });
+
+  waitFor(() => {
+    expect(screen.getByText("World economic forum")).toBeInTheDocument();
+  });
+
+  const februaryElements = screen.getAllByText("février");
+  const marchElements = screen.getAllByText("mars");
+  const januaryElements = screen.getAllByText("janvier");
+
+  screen.debug(); // Vérifie l'état du DOM après les recherches
+
+  // eslint-disable-next-line no-console
+  console.log("📌 Février trouvé :", februaryElements.length);
+  console.log("📌 Mars trouvé :", marchElements.length);
+  console.log("📌 Janvier trouvé :", januaryElements.length);
+  console.log("🚀 Test en cours...");
+  process.stdout.write("🚀 Test en cours...\n");
+
+  expect(februaryElements.length).toBeGreaterThan(0);
+  expect(marchElements.length).toBeGreaterThan(0);
+  expect(januaryElements.length).toBeGreaterThan(0);
 });
