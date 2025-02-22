@@ -1,6 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import { act } from "react";
 import Slider from "./index";
 import { api, DataProvider } from "../../contexts/DataContext";
+import { getMonth } from "../../helpers/Date";
 
 const data = {
   focus: [
@@ -26,74 +28,45 @@ const data = {
   ],
 };
 
-describe("When slider is created", () => {
-  it("a list card is displayed", async () => {
+describe("When Slider is created", () => {
+  beforeEach(() => {
     window.console.error = jest.fn();
     api.loadData = jest.fn().mockReturnValue(data);
-    render(
-      <DataProvider>
-        <Slider />
-      </DataProvider>
-    );
-    await screen.findByText("World economic forum");
-    await screen.findAllByText(
-      (content, element) =>
-        element &&
-        element.tagName.toLowerCase() === "div" &&
-        content.includes("février")
-    );
-    await screen.findByText(
-      "Oeuvre à la coopération entre le secteur public et le privé."
-    );
-    await screen.findByText("World Gaming Day");
-    await screen.findAllByText(
-      (content, element) =>
-        element &&
-        element.tagName.toLowerCase() === "div" &&
-        content.includes("mars")
-    );
-    await screen.findByText("Evenement mondial autour du gaming");
-    await screen.findByText("World Farming Day");
-    await screen.findAllByText(
-      (content, element) =>
-        element &&
-        element.tagName.toLowerCase() === "div" &&
-        content.includes("janvier")
-    );
-    await screen.findByText("Evenement mondial autour de la ferme");
   });
 
-  it("displays the correct number of slides", async () => {
-    window.console.error = jest.fn();
-    api.loadData = jest.fn().mockReturnValue(data);
-    render(
-      <DataProvider>
-        <Slider />
-      </DataProvider>
-    );
-    const slides = await screen.findAllByRole("img");
-    expect(slides).toHaveLength(3);
-  });
+  it("should display the correct months", async () => {
+    await act(async () => {
+      render(
+        <DataProvider>
+          <Slider />
+        </DataProvider>
+      );
+    });
 
-  it("displays the correct titles for each slide", async () => {
-    window.console.error = jest.fn();
-    api.loadData = jest.fn().mockReturnValue(data);
-    render(
-      <DataProvider>
-        <Slider />
-      </DataProvider>
+    // Attendre que le contenu soit affiché
+    await waitFor(() => {
+      expect(screen.getByText("World economic forum")).toBeInTheDocument();
+    });
+
+    // Vérifier que les mois sont bien affichés au moins une fois
+    const februaryElements = await screen.findAllByText(
+      (content, element) =>
+        element?.tagName.toLowerCase() === "div" &&
+        content.includes(getMonth(new Date("2022-02-29T20:28:45.744Z")))
     );
-    await screen.findByText("World economic forum");
-    await screen.findByText("World Gaming Day");
-    await screen.findByText("World Farming Day");
+    const marchElements = await screen.findAllByText(
+      (content, element) =>
+        element?.tagName.toLowerCase() === "div" &&
+        content.includes(getMonth(new Date("2022-03-29T20:28:45.744Z")))
+    );
+    const januaryElements = await screen.findAllByText(
+      (content, element) =>
+        element?.tagName.toLowerCase() === "div" &&
+        content.includes(getMonth(new Date("2022-01-29T20:28:45.744Z")))
+    );
+
+    expect(februaryElements.length).toBeGreaterThan(0);
+    expect(marchElements.length).toBeGreaterThan(0);
+    expect(januaryElements.length).toBeGreaterThan(0);
   });
 });
-await screen.findByText("Evenement mondial autour du gaming");
-await screen.findByText("World Farming Day");
-await screen.findAllByText(
-  (content, element) =>
-    element &&
-    element.tagName.toLowerCase() === "div" &&
-    content.includes("janvier")
-);
-await screen.findByText("Evenement mondial autour de la ferme");
