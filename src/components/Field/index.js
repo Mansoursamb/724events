@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import PropTypes from "prop-types";
 
 import "./style.scss";
@@ -67,13 +68,6 @@ Field.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-};
-
-Field.defaultProps = {
-  label: "",
-  placeholder: "",
-  type: FIELD_TYPES.INPUT_TEXT,
-  name: "field-name",
 };
 
 export default Field;

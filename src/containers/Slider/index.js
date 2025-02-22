@@ -13,7 +13,7 @@ const Slider = () => {
   const byDateDesc =
     data && data.focus
       ? [...data.focus].sort((evtA, evtB) =>
-          new Date(evtA.date) < new Date(evtB.date) ? -1 : 1
+          new Date(evtA.date) > new Date(evtB.date) ? -1 : 1
         )
       : [];
 
@@ -41,7 +41,7 @@ const Slider = () => {
     <div className="SlideCardList">
       {byDateDesc.map((event, idx) => (
         <div
-          key={event.id}
+          key={event.id || `event-${idx}`}
           className={`SlideCard SlideCard--${
             index === idx ? "display" : "hide"
           }`}

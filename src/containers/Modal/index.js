@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import PropTypes from "prop-types";
 import { useState } from "react";
 import Icon from "../../components/Icon";
@@ -26,14 +27,10 @@ const Modal = ({ opened, Content, children }) => {
   );
 };
 
-Modal.defaultProps = {
-  opened: false,
-}
-
 Modal.propTypes = {
   opened: PropTypes.bool,
   Content: PropTypes.node.isRequired,
   children: PropTypes.func.isRequired,
-}
+};
 
 export default Modal;

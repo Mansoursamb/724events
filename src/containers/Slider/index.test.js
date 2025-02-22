@@ -36,9 +36,64 @@ describe("When slider is created", () => {
       </DataProvider>
     );
     await screen.findByText("World economic forum");
-    await screen.findByText("janvier");
+    await screen.findAllByText(
+      (content, element) =>
+        element &&
+        element.tagName.toLowerCase() === "div" &&
+        content.includes("février")
+    );
     await screen.findByText(
       "Oeuvre à la coopération entre le secteur public et le privé."
     );
+    await screen.findByText("World Gaming Day");
+    await screen.findAllByText(
+      (content, element) =>
+        element &&
+        element.tagName.toLowerCase() === "div" &&
+        content.includes("mars")
+    );
+    await screen.findByText("Evenement mondial autour du gaming");
+    await screen.findByText("World Farming Day");
+    await screen.findAllByText(
+      (content, element) =>
+        element &&
+        element.tagName.toLowerCase() === "div" &&
+        content.includes("janvier")
+    );
+    await screen.findByText("Evenement mondial autour de la ferme");
+  });
+
+  it("displays the correct number of slides", async () => {
+    window.console.error = jest.fn();
+    api.loadData = jest.fn().mockReturnValue(data);
+    render(
+      <DataProvider>
+        <Slider />
+      </DataProvider>
+    );
+    const slides = await screen.findAllByRole("img");
+    expect(slides).toHaveLength(3);
+  });
+
+  it("displays the correct titles for each slide", async () => {
+    window.console.error = jest.fn();
+    api.loadData = jest.fn().mockReturnValue(data);
+    render(
+      <DataProvider>
+        <Slider />
+      </DataProvider>
+    );
+    await screen.findByText("World economic forum");
+    await screen.findByText("World Gaming Day");
+    await screen.findByText("World Farming Day");
   });
 });
+await screen.findByText("Evenement mondial autour du gaming");
+await screen.findByText("World Farming Day");
+await screen.findAllByText(
+  (content, element) =>
+    element &&
+    element.tagName.toLowerCase() === "div" &&
+    content.includes("janvier")
+);
+await screen.findByText("Evenement mondial autour de la ferme");
